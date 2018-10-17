@@ -4,44 +4,17 @@ FROM ubuntu:18.04
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 8.11.4
 ENV YARN_VERSION 1.5.1
-ENV DOTNET_VERSION 2.1
 ENV UBUNTU_VERSION 18.04
 
 # Install Dependencies
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
-      build-essential \
-      apt-transport-https \
       ca-certificates \
+      xz-utils \
       gnupg \
-      dirmngr \
-      psmisc \
-      python \
       curl \
       git \
   && rm -rf /var/lib/apt/lists/*
-
-# Before installing .NET, you'll need to register the Microsoft key, register the product repository,
-# and install required dependencies. This only needs to be done once per machine.
-# References: https://www.microsoft.com/net/download/linux-package-manager/ubuntu18-04/sdk-current
-RUN curl -fsSLO --compressed https://packages.microsoft.com/config/ubuntu/$UBUNTU_VERSION/packages-microsoft-prod.deb \
-  && dpkg -i packages-microsoft-prod.deb \
-  && rm -f packages-microsoft-prod.deb
-
-RUN apt-get update \
-  && apt-get -y --no-install-recommends install \
-    dotnet-runtime-$DOTNET_VERSION \
-  && rm -rf /var/lib/apt/lists/*
-
-# Install Google Chrome stable
-ARG CHROME_VERSION="google-chrome-stable"
-RUN curl -sSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
-  && apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install \
-    ${CHROME_VERSION:-google-chrome-stable} \
-  && rm /etc/apt/sources.list.d/google-chrome.list \
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
 RUN set -ex \
@@ -100,24 +73,10 @@ RUN set -ex \
 
 # Install the npm deps
 RUN npm i -g \
-  gulp \
-  grunt-cli \
-  better-vsts-npm-auth@4.1.5
-
-# Clean npm cache
-RUN npm cache clean --force
-
-# Clean the unused deps
-RUN apt-get purge --auto-remove -y --allow-remove-essential \
-      dirmngr \
-      psmisc \
-      curl \
-  && rm -rf /var/log/apt/* \
-  && rm -rf /etc/apt/sources.list.d/* \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /src/*.deb \
-  && rm -rf /tmp/* \
-  && rm -rf /var/cache/apt/*
+    gulp \
+    grunt-cli \
+    better-vsts-npm-auth@4.1.5 \
+  && npm cache clean --force
 
 # Expose port 80
 EXPOSE 80
