@@ -11,6 +11,7 @@ RUN apt-get update \
   && apt-get -y --no-install-recommends install \
       ca-certificates \
       xz-utils \
+      python \
       gnupg \
       curl \
       git \
