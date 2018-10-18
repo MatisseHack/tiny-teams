@@ -13,6 +13,7 @@ RUN apt-get update \
       xz-utils \
       python \
       gnupg \
+      make \
       curl \
       git \
   && rm -rf /var/lib/apt/lists/*
