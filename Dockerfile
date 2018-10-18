@@ -9,11 +9,10 @@ ENV UBUNTU_VERSION 18.04
 # Install Dependencies
 RUN apt-get update \
   && apt-get -y --no-install-recommends install \
+      build-essential \
       ca-certificates \
-      xz-utils \
       python \
       gnupg \
-      make \
       curl \
       git \
   && rm -rf /var/lib/apt/lists/*
